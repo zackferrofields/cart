@@ -1,27 +1,22 @@
 const { IO } = require('ramda-fantasy');
 const {
   add, always, compose, equals, forEachObjIndexed,
-  multiply, reduce, tap, toPairs, unless, divide
+  multiply, reduce, tap, toPairs, unless
 } = require('ramda');
-
-const currencyLocale = 'en-GB';
-
-const currenctFormat = { style: 'currency', currency: 'GBP' };
+const { toGBP } = require('./currency');
 
 const printLn = data => process.stdout.write(`${data}\n`);
 
-const toPrice = x => divide(x, 100).toLocaleString(currencyLocale, currenctFormat);
-
 const printItem = ([{price = 0, quantity = 0}, name]) =>
-  printLn(`${name} ${toPrice(multiply(quantity, price))}`);
+  printLn(`${name} ${toGBP(multiply(quantity, price))}`);
 
 const printOffer = ([{price = 0, quantity = 0, offer = always(0)}]) =>
-  unless(equals(0), compose(printLn, toPrice))(offer(quantity, price));
+  unless(equals(0), compose(printLn, toGBP))(offer(quantity, price));
 
 const printTotal = tap(compose(
   printLn,
   tap(() => printLn('-----')),
-  toPrice,
+  toGBP,
   reduce((acc, [, {price = 0, quantity = 0, offer = always(0)}]) =>
     add(acc, add(offer(quantity, price), multiply(quantity, price))), 0),
   toPairs));
