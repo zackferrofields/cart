@@ -1,6 +1,6 @@
 const {
-  compose, split, map, flatten, reject, isEmpty, toLower, __,
-  reduceBy, inc, identity, uncurryN, reduce, toPairs, merge, over, lensProp,
+  __, compose, filter, flatten, identity, inc, isEmpty, lensProp, lt, map, merge,
+  over, propOr, reduce, reduceBy, reject, split, toLower, toPairs, uncurryN
 } = require('ramda');
 
 const items = {
@@ -24,6 +24,8 @@ const mergeItems = uncurryN(3, name => quantity =>
 const reduceItems = reduce((acc, [name, quantity]) =>
   mergeItems(name, quantity, acc), items);
 
-const listItems = compose(reduceItems, toPairs, countItems, parseList);
+const filterItems = filter(compose(lt(0), propOr(0, 'quantity')));
+
+const listItems = compose(filterItems, reduceItems, toPairs, countItems, parseList);
 
 module.exports = listItems;
